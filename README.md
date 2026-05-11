@@ -1,14 +1,27 @@
-# Conversor Analítico - Enterprise Edition
+# Analytical Converter - Enterprise Edition
 
-Sistema de alto desempenho para conversão de arquivos CSV para formatos otimizados de Big Data, construído seguindo os princípios de Clean Architecture e SOLID.
+High-performance data conversion platform designed for transforming CSV datasets into optimized Big Data formats using a Clean Architecture approach and SOLID principles.
 
-## Visão Geral
+The system was engineered for scalability, maintainability and memory-efficient processing of large datasets.
 
-Este projeto foi reestruturado para atender a padrões corporativos de escalabilidade, manutenibilidade e segurança. Ele permite a conversão de grandes volumes de dados CSV para formatos como Parquet, Feather, ORC e HDF5, com suporte a processamento em chunks para otimização de memória RAM.
+---
 
-## Arquitetura
+# Overview
 
-O projeto segue a Clean Architecture Clássica, garantindo baixo acoplamento e alta coesão:
+This project provides a structured data processing platform capable of converting large CSV files into analytical storage formats such as:
+
+- Parquet
+- Feather
+- ORC
+- HDF5
+
+The application includes chunk-based processing strategies to reduce memory consumption and improve runtime efficiency when handling large-scale datasets.
+
+The architecture follows enterprise engineering standards with strong separation between business rules, use cases, infrastructure and presentation layers.
+
+---
+
+# Clean Architecture
 
 ```mermaid
 graph TD
@@ -38,58 +51,186 @@ graph TD
     UI --> Events
     Events --> Validate
     Events --> Convert
-    
+
     Validate --> Ports
     Convert --> Ports
-    
+
     Ports --> Entities
     Convert --> Entities
-    
+
     FS -.->|Implements| Ports
     Reader -.->|Implements| Ports
     Saver -.->|Implements| Ports
     Detect -.->|Implements| Ports
-    
-    %% Setup Dependency Inversion Rule
-    style Domain fill:#e1f5fe,stroke:#01579b,stroke-width:2px
-    style Application fill:#fff3e0,stroke:#e65100,stroke-width:2px
-    style Infrastructure fill:#e8f5e9,stroke:#1b5e20,stroke-width:2px
-    style Presentation fill:#fce4ec,stroke:#880e4f,stroke-width:2px
 ```
 
-- **Domain**: Regras de negócio essenciais e entidades independentes de frameworks.
-- **Application**: Casos de uso que orquestram a lógica da aplicação e interfaces (portas).
-- **Infrastructure**: Implementações técnicas (adaptadores) para acesso a arquivos, persistência e detecção de dados.
-- **Presentation**: Interface gráfica (GUI) construída com CustomTkinter, utilizando mensageria assíncrona para operações thread-safe.
+---
 
-## Tecnologias
+# Architecture Layers
 
-- Python 3.10+
-- Pandas (Processamento de dados)
-- PyArrow (Mecanismo de Big Data)
-- CustomTkinter (Interface Moderna)
-- Ruff/Mypy/Black (Qualidade de Código)
+## Domain Layer
 
-## Instalação
+Contains:
 
-1. Certifique-se de ter o Python instalado.
-2. Instale as dependências:
-   ```bash
-   pip install -r requirements.txt
-   ```
+- Core business rules
+- Domain entities
+- Framework-independent logic
+- Validation policies
 
-## Execução
+## Application Layer
 
-Inicie a aplicação através do ponto de entrada principal:
+Responsible for:
+
+- Use case orchestration
+- Business workflow coordination
+- Interface contracts (ports)
+- Conversion pipelines
+
+## Infrastructure Layer
+
+Implements:
+
+- File system access
+- CSV readers
+- Data persistence adapters
+- Format detection services
+
+## Presentation Layer
+
+Provides:
+
+- Desktop graphical interface
+- Asynchronous event communication
+- Thread-safe UI operations
+- Runtime feedback visualization
+
+---
+
+# Core Features
+
+- CSV conversion to Big Data formats
+- Chunk-based memory optimization
+- High-volume dataset processing
+- Clean Architecture implementation
+- Asynchronous processing workflows
+- Thread-safe desktop operations
+- Extensible conversion pipelines
+- Modular adapter-based infrastructure
+- Type-safe engineering standards
+
+---
+
+# Supported Formats
+
+| Input | Output Formats |
+|---|---|
+| CSV | Parquet |
+| CSV | Feather |
+| CSV | ORC |
+| CSV | HDF5 |
+
+---
+
+# Technology Stack
+
+| Layer | Technology |
+|---|---|
+| Language | Python 3.10+ |
+| Data Processing | Pandas |
+| Big Data Engine | PyArrow |
+| Desktop UI | CustomTkinter |
+| Linting | Ruff |
+| Type Checking | Mypy |
+| Formatting | Black |
+
+---
+
+# Performance Strategies
+
+The platform includes several runtime optimization mechanisms:
+
+- Chunk-based file reading
+- Reduced memory allocation
+- Efficient serialization pipelines
+- Adapter isolation for extensibility
+- Asynchronous processing workflows
+- Low-coupling architecture design
+
+---
+
+# Installation
+
+## Install dependencies
+
+```bash
+pip install -r requirements.txt
+```
+
+---
+
+# Run Application
+
 ```bash
 python main.py
 ```
 
-## Qualidade de Código
+---
 
-O projeto utiliza ferramentas modernas para garantir a integridade do código:
-- **Linting**: Ruff
-- **Type Checking**: Mypy
-- **Formatting**: Black
+# Code Quality
 
-As configurações estão centralizadas no arquivo `pyproject.toml`.
+The project uses modern engineering tooling to ensure code reliability and maintainability.
+
+| Tool | Purpose |
+|---|---|
+| Ruff | Linting |
+| Mypy | Static type checking |
+| Black | Code formatting |
+
+All tooling configuration is centralized in:
+
+```text
+pyproject.toml
+```
+
+---
+
+# Engineering Principles
+
+- Clean Architecture
+- SOLID Principles
+- Dependency Inversion
+- Separation of Concerns (SoC)
+- High Cohesion / Low Coupling
+- Modular Infrastructure
+- Scalable Data Pipelines
+- Enterprise-Oriented Design
+
+---
+
+# Use Cases
+
+- Big Data preprocessing
+- Analytical dataset optimization
+- ETL workflows
+- Data lake preparation
+- CSV normalization pipelines
+- Batch conversion systems
+
+---
+
+# Future Improvements
+
+Potential roadmap enhancements:
+
+- Distributed processing support
+- Multi-threaded conversion engine
+- Cloud storage integration
+- Streaming-based ingestion
+- Apache Spark interoperability
+- Schema inference optimization
+
+---
+
+# License
+
+This project is available under the MIT License.
