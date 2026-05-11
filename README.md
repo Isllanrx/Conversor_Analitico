@@ -1,54 +1,95 @@
-# Conversor CSV Modular
+# Conversor Analítico - Enterprise Edition
 
-Conversor CSV com estrutura modular para fácil manutenção e extensão.
+Sistema de alto desempenho para conversão de arquivos CSV para formatos otimizados de Big Data, construído seguindo os princípios de Clean Architecture e SOLID.
 
-## Como Usar
+## Visão Geral
 
-### Interface Gráfica
+Este projeto foi reestruturado para atender a padrões corporativos de escalabilidade, manutenibilidade e segurança. Ele permite a conversão de grandes volumes de dados CSV para formatos como Parquet, Feather, ORC e HDF5, com suporte a processamento em chunks para otimização de memória RAM.
+
+## Arquitetura
+
+O projeto segue a Clean Architecture Clássica, garantindo baixo acoplamento e alta coesão:
+
+```mermaid
+graph TD
+    subgraph Presentation ["Presentation Layer (GUI)"]
+        UI[CustomTkinter UI]
+        Events[Event Emitter]
+    end
+
+    subgraph Application ["Application Layer (Use Cases)"]
+        Validate[ValidateFilesUseCase]
+        Convert[ConvertFilesUseCase]
+        Ports[Interfaces / Ports]
+    end
+
+    subgraph Domain ["Domain Layer (Core)"]
+        Entities[FormatMetadata]
+        Bus[Business Rules]
+    end
+
+    subgraph Infrastructure ["Infrastructure Layer (Adapters)"]
+        FS[LocalFileSystem]
+        Reader[PandasCsvReader]
+        Saver[PandasFileSaver]
+        Detect[DetectorCSV]
+    end
+
+    UI --> Events
+    Events --> Validate
+    Events --> Convert
+    
+    Validate --> Ports
+    Convert --> Ports
+    
+    Ports --> Entities
+    Convert --> Entities
+    
+    FS -.->|Implements| Ports
+    Reader -.->|Implements| Ports
+    Saver -.->|Implements| Ports
+    Detect -.->|Implements| Ports
+    
+    %% Setup Dependency Inversion Rule
+    style Domain fill:#e1f5fe,stroke:#01579b,stroke-width:2px
+    style Application fill:#fff3e0,stroke:#e65100,stroke-width:2px
+    style Infrastructure fill:#e8f5e9,stroke:#1b5e20,stroke-width:2px
+    style Presentation fill:#fce4ec,stroke:#880e4f,stroke-width:2px
+```
+
+- **Domain**: Regras de negócio essenciais e entidades independentes de frameworks.
+- **Application**: Casos de uso que orquestram a lógica da aplicação e interfaces (portas).
+- **Infrastructure**: Implementações técnicas (adaptadores) para acesso a arquivos, persistência e detecção de dados.
+- **Presentation**: Interface gráfica (GUI) construída com CustomTkinter, utilizando mensageria assíncrona para operações thread-safe.
+
+## Tecnologias
+
+- Python 3.10+
+- Pandas (Processamento de dados)
+- PyArrow (Mecanismo de Big Data)
+- CustomTkinter (Interface Moderna)
+- Ruff/Mypy/Black (Qualidade de Código)
+
+## Instalação
+
+1. Certifique-se de ter o Python instalado.
+2. Instale as dependências:
+   ```bash
+   pip install -r requirements.txt
+   ```
+
+## Execução
+
+Inicie a aplicação através do ponto de entrada principal:
 ```bash
-python -m conversor_csv_modular.main
+python main.py
 ```
 
-### Como Módulo Python
-```python
-from conversor_csv_modular import ConversorCSV
+## Qualidade de Código
 
-conversor = ConversorCSV()
-dataframe = conversor.ler_csv('arquivo.csv')
-conversor.salvar(dataframe, 'saida.parquet', 'parquet')
-```
+O projeto utiliza ferramentas modernas para garantir a integridade do código:
+- **Linting**: Ruff
+- **Type Checking**: Mypy
+- **Formatting**: Black
 
-## Estrutura
-
-| Módulo | Descrição |
-|--------|-----------|
-| `config.py` | Configurações e constantes |
-| `detector_csv.py` | Detecção automática (encoding, delimitador, aspas) |
-| `conversor.py` | Lógica principal de conversão |
-| `salvadores.py` | Salvamento em diferentes formatos |
-| `interface.py` | Interface gráfica (CustomTkinter) |
-| `tipos.py` | Estruturas de dados |
-| `widgets.py` | Widgets customizados |
-| `utils.py` | Funções utilitárias |
-
-## Formatos Suportados
-
-- **Parquet** - Compactado para Big Data
-- **Feather** - Leitura rápida
-- **ORC** - Compatível Hive/Spark
-- **HDF5** - Formato binário estruturado
-- **JSON** - Formato universal
-- **Pickle** - Serialização Python
-
-## Funcionalidades
-
-- Detecção automática de delimitadores (`,`, `;`, `\t`, `|`)
-- Detecção automática de encoding (UTF-8, ISO-8859-1, UTF-16)
-- Detecção automática de aspas e escape
-- Suporte a arquivos compactados (.gz, .zip)
-- Processamento em pedaços para arquivos grandes
-- Interface gráfica intuitiva
-
-## Requisitos
-
-Veja `requirements.txt` na pasta raiz do projeto.
+As configurações estão centralizadas no arquivo `pyproject.toml`.

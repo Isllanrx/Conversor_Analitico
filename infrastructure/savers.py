@@ -7,8 +7,8 @@ from typing import Any
 
 import pandas as pd  # type: ignore[import]
 
-from ..application.interfaces import IFileSaver
-from ..domain.entities import ConversionFormat, CsvConfig
+from application.interfaces import IFileSaver
+from domain.entities import ConversionFormat, CsvConfig
 
 try:
     import pyarrow as pa  # type: ignore[import]

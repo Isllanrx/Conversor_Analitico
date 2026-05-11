@@ -7,10 +7,10 @@ from tkinter import filedialog, messagebox
 
 import customtkinter as ctk  # type: ignore[import]
 
-from ..application.use_cases import ConvertFilesUseCase, ValidateFilesUseCase
-from ..domain.entities import FormatMetadata
-from .events import EventType, UIEvent, UIEventEmitter
-from .widgets import DicaTooltip
+from application.use_cases import ConvertFilesUseCase, ValidateFilesUseCase
+from domain.entities import FormatMetadata
+from presentation.events import EventType, UIEvent, UIEventEmitter
+from presentation.widgets import DicaTooltip
 
 
 class AplicacaoConversor(ctk.CTk):

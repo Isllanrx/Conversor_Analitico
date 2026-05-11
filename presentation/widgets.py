@@ -1,7 +1,7 @@
 from tkinter import Label, Toplevel
 from typing import Any
 
-from .config import TOOLTIP_BACKGROUND, TOOLTIP_OFFSET_X, TOOLTIP_OFFSET_Y
+from config import TOOLTIP_BACKGROUND, TOOLTIP_OFFSET_X, TOOLTIP_OFFSET_Y
 
 
 class DicaTooltip:

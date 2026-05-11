@@ -6,8 +6,8 @@ from typing import Any
 
 import pandas as pd  # type: ignore[import]
 
-from ..application.interfaces import ICsvReader, IFileSystem
-from ..domain.entities import CsvConfig
+from application.interfaces import ICsvReader, IFileSystem
+from domain.entities import CsvConfig
 
 
 class LocalFileSystem(IFileSystem):

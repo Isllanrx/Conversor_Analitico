@@ -82,6 +82,9 @@ ipython_config.py
 # pipenv
 Pipfile.lock
 
+# ruff
+.ruff_cache/
+
 # pytest
 .cache
 

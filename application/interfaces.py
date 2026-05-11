@@ -4,7 +4,7 @@ from abc import ABC, abstractmethod
 from collections.abc import Callable
 from typing import Any, Protocol
 
-from ..domain.entities import ConversionFormat, CsvConfig
+from domain.entities import ConversionFormat, CsvConfig
 
 
 class IFileSystem(ABC):

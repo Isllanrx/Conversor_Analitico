@@ -6,8 +6,8 @@ from pathlib import Path
 from typing import Any
 from zipfile import ZipFile
 
-from ..application.interfaces import ICsvDetector
-from ..domain.entities import CsvConfig
+from application.interfaces import ICsvDetector
+from domain.entities import CsvConfig
 
 try:
     import chardet  # type: ignore[import]

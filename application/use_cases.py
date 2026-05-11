@@ -5,8 +5,8 @@ import logging
 from pathlib import Path
 from typing import Any
 
-from ..domain.entities import ConversionFormat, CsvConfig, FormatMetadata
-from .interfaces import (
+from domain.entities import ConversionFormat, CsvConfig, FormatMetadata
+from application.interfaces import (
     ICsvDetector,
     ICsvReader,
     IFileSaver,
