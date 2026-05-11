@@ -1,6 +1,7 @@
-"""Implementações concretas das interfaces de infraestrutura."""
+"""Concrete implementations of infrastructure interfaces."""
 
 import os
+import logging
 from pathlib import Path
 from typing import Any
 
@@ -9,9 +10,10 @@ import pandas as pd  # type: ignore[import]
 from application.interfaces import ICsvReader, IFileSystem
 from domain.entities import CsvConfig
 
+logger = logging.getLogger(__name__)
 
 class LocalFileSystem(IFileSystem):
-    """Implementação para sistema de arquivos local."""
+    """Implementation for local file system operations."""
 
     def get_size(self, path: str) -> int:
         return os.path.getsize(self.get_absolute_path(path))
@@ -30,9 +32,12 @@ class LocalFileSystem(IFileSystem):
 
 
 class PandasCsvReader(ICsvReader):
-    """Implementação de leitura de CSV usando Pandas."""
+    """Implementation of CSV reading using Pandas."""
 
     def read(self, path: str, config: CsvConfig) -> Any:
+        """Reads a CSV file into a Pandas DataFrame."""
+        logger.info(f"Reading CSV: {path} with encoding {config.encoding}")
+        
         params: dict[str, Any] = {
             "low_memory": False,
             "encoding": config.encoding,
@@ -52,7 +57,7 @@ class PandasCsvReader(ICsvReader):
             with ZipFile(path, "r") as zf:
                 name = zf.namelist()[0]
                 with zf.open(name) as f:
-                    content = f.read().decode(config.encoding, errors="replace")
-                    return pd.read_csv(io.StringIO(content), **params)
+                    # Optimized reading of zip content
+                    return pd.read_csv(f, **params)
 
         return pd.read_csv(path, **params)

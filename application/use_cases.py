@@ -1,4 +1,4 @@
-"""Casos de uso da aplicação."""
+"""Application use cases."""
 
 import gc
 import logging
@@ -14,9 +14,10 @@ from application.interfaces import (
     IProgressObserver,
 )
 
+logger = logging.getLogger(__name__)
 
 class ValidateFilesUseCase:
-    """Caso de uso para validação de arquivos antes do processamento."""
+    """Use case for validating files before processing."""
 
     def __init__(self, file_system: IFileSystem, max_files: int, max_size: int) -> None:
         self.file_system = file_system
@@ -25,21 +26,21 @@ class ValidateFilesUseCase:
 
     def execute(self, file_paths: list[str]) -> str | None:
         if len(file_paths) > self.max_files:
-            return f"Limite de {self.max_files} arquivos excedido."
+            return f"Limit of {self.max_files} files exceeded."
 
         try:
             total_size = sum(self.file_system.get_size(p) for p in file_paths)
             if total_size > self.max_size:
-                return "Arquivos muito grandes."
-        except (FileNotFoundError, OSError) as erro:
-            logging.error(f"Erro ao verificar arquivos: {erro}")
-            return f"Erro ao acessar arquivos: {erro}"
+                return f"Files are too large (limit: {self.max_size // (1024*1024)}MB)."
+        except (FileNotFoundError, OSError) as e:
+            logger.error(f"Error checking files: {e}")
+            return f"Error accessing files: {e}"
 
         return None
 
 
 class ConvertFilesUseCase:
-    """Caso de uso para orquestrar a conversão de arquivos."""
+    """Use case for orchestrating file conversion."""
 
     def __init__(
         self,
@@ -69,7 +70,10 @@ class ConvertFilesUseCase:
         for i, source in enumerate(file_paths, 1):
             try:
                 source_abs = self.file_system.get_absolute_path(source)
-                observer.update(i - 1, total, f"Processando: {Path(source_abs).name}")
+                file_name = Path(source_abs).name
+                observer.update(i - 1, total, f"Processing: {file_name}")
+                
+                logger.info(f"Starting conversion of {file_name}")
                 
                 config = self.detector.detect(source_abs)
                 target_name = f"{Path(source_abs).stem}.{format_meta.extension}"
@@ -77,15 +81,17 @@ class ConvertFilesUseCase:
                 target_abs = self.file_system.get_absolute_path(target_path)
 
                 if self.low_ram_mode and format_meta.supports_chunks:
+                    logger.info(f"Using Chunk Mode for {file_name}")
                     self._process_in_chunks(source_abs, target_abs, format_meta, config)
                 else:
+                    logger.info(f"Using Full Mode for {file_name}")
                     self._process_full(source_abs, target_abs, format_meta, config)
 
-                observer.update(i, total, f"Concluído: {Path(source_abs).name}")
+                observer.update(i, total, f"Finished: {file_name}")
                 gc.collect()
 
             except Exception as e:
-                logging.error(f"Erro ao converter {source}: {e}")
+                logger.exception(f"Error converting {source}")
                 raise
 
     def _process_full(self, source: str, target: str, format_meta: FormatMetadata, config: CsvConfig) -> None:
@@ -99,5 +105,5 @@ class ConvertFilesUseCase:
             target, 
             ConversionFormat(format_meta.extension), 
             config,
-            lambda curr, tot: None
+            lambda curr, tot: None # Could be expanded to show chunk progress
         )

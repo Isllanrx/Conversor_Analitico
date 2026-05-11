@@ -1,4 +1,4 @@
-"""Sistema de mensageria assíncrona para UI."""
+"""Asynchronous messaging system for the UI."""
 
 import queue
 from dataclasses import dataclass
@@ -7,7 +7,7 @@ from typing import Any
 
 
 class EventType(Enum):
-    """Tipos de eventos disparados pelo backend para a UI."""
+    """Types of events triggered by the backend for the UI."""
     PROGRESS = auto()
     SUCCESS = auto()
     ERROR = auto()
@@ -15,13 +15,13 @@ class EventType(Enum):
 
 @dataclass
 class UIEvent:
-    """Dados de um evento de interface."""
+    """Interface event data."""
     type: EventType
     payload: Any = None
     message: str = ""
 
 class UIEventEmitter:
-    """Emissor de eventos para threads de background."""
+    """Event emitter for background threads."""
 
     def __init__(self, event_queue: queue.Queue[UIEvent]) -> None:
         self.queue = event_queue

@@ -11,15 +11,22 @@ if str(root_dir) not in sys.path:
 def bootstrap() -> None:
     """Configura e inicia a aplicação com Injeção de Dependência e Lazy Loading."""
     
-    # Imports pesados movidos para dentro do bootstrap para acelerar o arranque do processo
+    # 0. Setup Logging
+    from infrastructure.logging_config import setup_logging
+    from config import LOG_LEVEL
+    setup_logging(LOG_LEVEL)
+    
+    import logging
+    logger = logging.getLogger(__name__)
+    logger.info("Iniciando bootstrap da aplicação...")
+
+    # 1. Imports pesados (Lazy Loading)
     from config import (
-        ALTURA_JANELA,
-        ALTURA_LISTA,
-        LARGURA_JANELA,
-        LIMITE_RAM_BAIXO,
-        MAX_ARQUIVOS,
-        MAX_TAMANHO_ARQUIVO,
-        PASTA_CONVERTIDOS,
+        UI_CONFIG,
+        LOW_RAM_THRESHOLD,
+        MAX_FILES,
+        MAX_FILE_SIZE,
+        CONVERTED_DIR,
     )
     from domain.entities import FormatMetadata
     from application.use_cases import ConvertFilesUseCase, ValidateFilesUseCase
@@ -28,7 +35,7 @@ def bootstrap() -> None:
     from infrastructure.savers import PandasFileSaver
     from presentation.app import AplicacaoConversor
 
-    # 1. Infraestrutura
+    # 2. Infraestrutura
     fs = LocalFileSystem()
     detector = DetectorCSV()
     reader = PandasCsvReader()
@@ -37,32 +44,30 @@ def bootstrap() -> None:
     # Detecção de RAM resiliente
     try:
         import psutil  # type: ignore[import]
-        low_ram = psutil.virtual_memory().available < LIMITE_RAM_BAIXO
+        low_ram = psutil.virtual_memory().available < LOW_RAM_THRESHOLD
+        if low_ram:
+            logger.warning(f"Sistema com RAM baixa detectada. Modo Low RAM ativado.")
     except ImportError:
+        logger.warning("psutil não instalado. Detecção de RAM desativada.")
         low_ram = False
 
-    # 2. Casos de Uso
-    validate_uc = ValidateFilesUseCase(fs, MAX_ARQUIVOS, MAX_TAMANHO_ARQUIVO)
-    convert_uc = ConvertFilesUseCase(fs, detector, reader, saver, PASTA_CONVERTIDOS, low_ram)
+    # 3. Casos de Uso
+    validate_uc = ValidateFilesUseCase(fs, MAX_FILES, MAX_FILE_SIZE)
+    convert_uc = ConvertFilesUseCase(fs, detector, reader, saver, CONVERTED_DIR, low_ram)
 
-    # 3. Metadados de Formatos
+    # 4. Metadados de Formatos
     formatos = [
-        FormatMetadata("Parquet", "parquet", "Compactado para Big Data", True),
-        FormatMetadata("Feather", "feather", "Leitura rápida", False),
+        FormatMetadata("Parquet", "parquet", "Compactado para Big Data (Recomendado)", True),
+        FormatMetadata("Feather", "feather", "Leitura ultra-rápida (V2)", False),
         FormatMetadata("ORC", "orc", "Compatível Hive/Spark", False),
-        FormatMetadata("HDF5", "h5", "Formato binário estruturado", True),
-        FormatMetadata("Pickle", "pkl", "Serialização Python", False),
-        FormatMetadata("JSON", "json", "Formato universal", True),
+        FormatMetadata("HDF5", "h5", "Formato binário para grandes volumes", True),
+        FormatMetadata("Pickle", "pkl", "Serialização nativa Python", False),
+        FormatMetadata("JSON", "json", "Formato universal (Lines)", True),
     ]
 
-    config_ui = {
-        "largura": LARGURA_JANELA,
-        "altura": ALTURA_JANELA,
-        "altura_lista": ALTURA_LISTA
-    }
-
-    # 4. Inicialização da UI
-    app = AplicacaoConversor(validate_uc, convert_uc, formatos, config_ui)
+    # 5. Inicialização da UI
+    logger.info("Lançando interface gráfica...")
+    app = AplicacaoConversor(validate_uc, convert_uc, formatos, UI_CONFIG)
     app.mainloop()
 
 if __name__ == "__main__":

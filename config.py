@@ -1,21 +1,32 @@
+import logging
 from pathlib import Path
 
-# Constantes de configuração
-DIRETORIO_SCRIPT: Path = Path(__file__).parent.absolute().resolve()
-PASTA_CONVERTIDOS: str = str(DIRETORIO_SCRIPT.resolve() / 'CSV_Convertidos')
-CODIFICACOES: tuple[str, ...] = ('utf-8', 'ISO-8859-1')
-TAMANHO_PEDACO: int = 100_000
-MAX_ARQUIVOS: int = 100
-MAX_TAMANHO_ARQUIVO: int = 2 * 1024 * 1024 * 1024
-MAX_TENTATIVAS: int = 3
-LIMITE_RAM_BAIXO: int = 3 * 1024 * 1024 * 1024
-FORMATOS_PEDACO: set[str] = {'parquet', 'h5', 'json'}
+# Configuração de Logging
+LOG_LEVEL = logging.INFO
 
-# Constantes de UI e processamento
-TOOLTIP_OFFSET_X: int = 25
-TOOLTIP_OFFSET_Y: int = 25
-TOOLTIP_BACKGROUND: str = '#ffffe0'
-ALTURA_LISTA: int = 100
-LARGURA_BOTAO_CREDITOS: int = 150
-LARGURA_JANELA: int = 800
-ALTURA_JANELA: int = 600
+# Constantes de diretório
+ROOT_DIR: Path = Path(__file__).parent.absolute().resolve()
+CONVERTED_DIR: str = str(ROOT_DIR / 'Converted_CSV')
+
+# Configurações de CSV
+ENCODINGS: tuple[str, ...] = ('utf-8', 'ISO-8859-1', 'cp1252')
+CHUNK_SIZE: int = 100_000
+MAX_FILES: int = 100
+MAX_FILE_SIZE: int = 2 * 1024 * 1024 * 1024  # 2GB
+MAX_RETRIES: int = 3
+LOW_RAM_THRESHOLD: int = 3 * 1024 * 1024 * 1024  # 3GB
+CHUNK_SUPPORTED_FORMATS: set[str] = {'parquet', 'h5', 'json'}
+
+# Configurações de UI
+UI_CONFIG = {
+    "WINDOW_WIDTH": 800,
+    "WINDOW_HEIGHT": 600,
+    "LIST_HEIGHT": 150,
+    "TOOLTIP_DELAY": 500,
+    "TOOLTIP_BG": '#f0f0f0',
+    "TOOLTIP_OFFSET": (25, 25)
+}
+
+# URLs e Créditos
+LINKEDIN_URL = "https://www.linkedin.com/in/isllantoso/"
+DEV_NAME = "Isllan Toso"

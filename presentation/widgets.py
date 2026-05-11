@@ -1,39 +1,44 @@
 from tkinter import Label, Toplevel
 from typing import Any
 
-from config import TOOLTIP_BACKGROUND, TOOLTIP_OFFSET_X, TOOLTIP_OFFSET_Y
+from config import UI_CONFIG
 
 
-class DicaTooltip:
-    """Widget tooltip que exibe informações ao passar o mouse sobre um elemento."""
+class InfoTooltip:
+    """Tooltip widget that displays information on hover."""
 
-    def __init__(self, widget: Any, texto: str) -> None:
-        """Inicializa o tooltip para um widget."""
+    def __init__(self, widget: Any, text: str) -> None:
+        """Initializes the tooltip for a widget."""
         self.widget: Any = widget
-        self.texto: str = texto
+        self.text: str = text
         self.tooltip: Toplevel | None = None
-        widget.bind('<Enter>', self._entrar)
-        widget.bind('<Leave>', self._sair)
+        widget.bind('<Enter>', self._on_enter)
+        widget.bind('<Leave>', self._on_leave)
 
-    def _entrar(self, evento: Any = None) -> None:
-        """Exibe o tooltip quando o mouse entra no widget."""
-        pos_x, pos_y, _, _ = self.widget.bbox('insert')
-        pos_x += self.widget.winfo_rootx() + TOOLTIP_OFFSET_X
-        pos_y += self.widget.winfo_rooty() + TOOLTIP_OFFSET_Y
+    def _on_enter(self, event: Any = None) -> None:
+        """Displays the tooltip when the mouse enters the widget."""
+        x, y, _, _ = self.widget.bbox('insert')
+        offset_x, offset_y = UI_CONFIG['TOOLTIP_OFFSET']
+        x += self.widget.winfo_rootx() + offset_x
+        y += self.widget.winfo_rooty() + offset_y
+        
         self.tooltip = Toplevel(self.widget)
         self.tooltip.wm_overrideredirect(True)
-        self.tooltip.wm_geometry(f'+{pos_x}+{pos_y}')
-        rotulo = Label(
+        self.tooltip.wm_geometry(f'+{x}+{y}')
+        
+        label = Label(
             self.tooltip,
-            text=self.texto,
-            background=TOOLTIP_BACKGROUND,
+            text=self.text,
+            background=UI_CONFIG['TOOLTIP_BG'],
             relief='solid',
             borderwidth=1,
+            padx=5,
+            pady=2
         )
-        rotulo.pack()
+        label.pack()
 
-    def _sair(self, evento: Any = None) -> None:
-        """Remove o tooltip quando o mouse sai do widget."""
+    def _on_leave(self, event: Any = None) -> None:
+        """Removes the tooltip when the mouse leaves the widget."""
         if self.tooltip:
             self.tooltip.destroy()
             self.tooltip = None
